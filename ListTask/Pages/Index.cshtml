@@ -1,0 +1,100 @@
+﻿@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Liste des tâches";
+}
+
+<div class="container mt-4">
+    <div class="modal-title">
+        <h1 class="text-center">@ViewData["Title"]</h1>
+    </div>
+
+    <div class="mt-4">
+        <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Nom</strong>
+                <strong>Description</strong>
+                <strong>Date de création</strong>
+                <strong>Status</strong>
+            </li>
+            @foreach (var task in Model.Tasks)
+            {
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>@task.name</span>
+                    <span>@task.description</span>
+                    <span>@task.creation_date</span>
+                    <span>
+                        @if (task.finished)
+                        {
+                            <span class="badge bg-success">Terminé</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">En cours</span>
+                        }
+                    </span>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editTaskModal">Modifier</button>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTaskModalLabel">Modifier la tâche</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" asp-page-handler="OnPost">
+                    <input type="hidden" id="taskId" name="taskId" value="">
+                    <div class="form-group">
+                        <label for="taskName">Nom de la tâche</label>
+                        <input type="text" class="form-control" id="taskName" name="taskName" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Description</label>
+                        <textarea class="form-control" id="taskDescription" name="taskDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskCreationDate">Date de création</label>
+                        <input type="text" class="form-control" id="taskCreationDate" name="taskCreationDate" value="" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskStatus">Statut</label>
+                        <select class="form-control" id="taskStatus" name="taskStatus">
+                            <option value="true">Terminé</option>
+                            <option value="false">En cours</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#editTaskModal').on('show.bs.modal', function (event) {
+        let button = $(event.relatedTarget);
+        let taskName = button.data('name');
+        let taskDescription = button.data('description');
+        let taskCreationDate = button.data('creationdate');
+        let taskStatus = button.data('status');
+
+        $('#taskName').val(taskName);
+        $('#taskDescription').val(taskDescription);
+        $('#taskCreationDate').val(taskCreationDate);
+        $('#taskStatus').val(taskStatus ?? false); // Utiliser false comme valeur par défaut pour taskStatus si elle est undefined
+        $('#taskId').val(taskId);
+    });
+    function setTaskId(taskId) {
+        $('#taskId').val(taskId);
+    }
+</script> <!-- Chemin vers le fichier JavaScript -->
